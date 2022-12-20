@@ -1,0 +1,11 @@
+numpy~=1.23.5
+scikit-image~=0.19.3
+tensorflow~=2.11.0
+keras~=2.11.0
+opencv-python~=4.6.0.66
+scipy~=1.9.3
+Pillow~=9.3.0
+matplotlib~=3.6.2
+ipython~=8.7.0
+pandas~=1.5.2
+mahotas~=1.4.13

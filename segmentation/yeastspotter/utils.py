@@ -86,12 +86,14 @@ def crop_single_cells(filename, image_dir, mask_dir, out_dir, additional_img_str
             main_img = np.array(Image.open(main_img_name))
 
             # try to get the crop and save it as rgb tif; skip cells that can't get a full crop for
+            protein_name = filename.split("_")[0]
+            curr_outdir = out_dir + protein_name + "/"
 
             if c1 < 0 or c3 < 0 or c2 > main_img.shape[0] or c4 > main_img.shape[1]:
                 pass
             else:
-                if not os.path.exists(out_dir):
-                    os.makedirs(out_dir)
+                if not os.path.exists(curr_outdir):
+                    os.makedirs(curr_outdir)
 
                 # Crop main image and save as single cell crop
                 out_img = main_img[c1:c2, c3:c4]
@@ -100,7 +102,7 @@ def crop_single_cells(filename, image_dir, mask_dir, out_dir, additional_img_str
 
                 ext = os.path.splitext(filename)[1]
                 out_img = Image.fromarray(out_img)
-                out_img.save(out_dir + basename + "_" + str(cell) + ext)
+                out_img.save(curr_outdir + basename + "_" + str(cell) + ext)
 
                 # Crop any additional image using provided string replacements
                 for str_rep in additional_img_strs:
@@ -111,7 +113,7 @@ def crop_single_cells(filename, image_dir, mask_dir, out_dir, additional_img_str
                     addi_crop = addi_img[c1:c2, c3:c4]
                     addi_crop = skimage.transform.resize(addi_crop, (resize, resize), preserve_range=True)
                     addi_crop = Image.fromarray(addi_crop)
-                    addi_crop.save(out_dir + addi_basename + "_" + str(cell) + ext)
+                    addi_crop.save(curr_outdir + addi_basename + "_" + str(cell) + ext)
 
 
 def batch_crop_single_cells(image_dir, mask_dir, output_dir, additional_img_strs, cropsize=64, resize=64):
