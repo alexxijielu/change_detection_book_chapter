@@ -36,7 +36,7 @@ def openGeneMatrix(fileName):
     headers = matrix[0, :]
     genematrix = matrix[1:, 1:]
     try:
-        genematrix = genematrix.astype(np.float32)
+        genematrix = genematrix.astype(float)
     except:
         pass
 

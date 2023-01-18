@@ -19,8 +19,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see
 <https://www.gnu.org/licenses/>.'''
 
-from util import openGeneMatrix
-from util import packageGeneMatrix
+from .util import openGeneMatrix
+from .util import packageGeneMatrix
 from sklearn import preprocessing
 import numpy as np
 import sklearn.metrics.pairwise as skdist
@@ -96,7 +96,7 @@ def modWeights(k, geneMatrix, distMatrix, metric='euclidean', verbose=True):
             medians[gene][feature] = np.median(neighbors[:, feature])
             MAD[gene][feature] = np.median(abs(medians[gene][feature] - neighbors[:, feature]))
         if ((gene + 1) % 200 == 0 or (gene + 1) == geneMatrix.shape[0]) and verbose:
-            print ("Calculated expectations for %d out of %d genes." % ((gene + 1), geneMatrix.shape[0]))
+            print ("Calculated expectations for %d out of %d proteins." % ((gene + 1), geneMatrix.shape[0]))
 
     return medians, MAD
 
