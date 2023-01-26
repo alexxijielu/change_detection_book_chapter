@@ -104,7 +104,7 @@ def visualize_changes(control_features, condition_features, change_matrix, prote
         c_ids = cmap(np.linspace(0, 1.0, len(classes)))
         for c in classes:
             ix = np.where(labels == c)
-            ax.scatter(control_projection[ix, 0], control_projection[ix, 1], c=np.array([c_ids[i]]),
+            ax.scatter(control_projection[ix, 0], control_projection[ix, 1], color=np.array([c_ids[i]]),
                        marker='o', label=c, s=3)
             i += 1
     else:
@@ -140,7 +140,7 @@ def visualize_changes(control_features, condition_features, change_matrix, prote
 
         if len(labels) != 0:
             ax.scatter(control_projection[pidx, 0], control_projection[pidx, 1],
-                       c=c_ids[plabelidx], edgecolors='black', marker='o', linewidth=1, s=50, alpha=0.7)
+                       color=c_ids[plabelidx], edgecolors='black', marker='o', linewidth=1, s=50, alpha=0.7)
 
         ax.arrow(control_projection[pidx, 0],
                  control_projection[pidx, 1],
