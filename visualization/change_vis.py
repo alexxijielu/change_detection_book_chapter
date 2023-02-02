@@ -1,5 +1,3 @@
-import matplotlib
-matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import matplotlib.patheffects as PathEffects
 from sklearn.preprocessing import StandardScaler
@@ -8,7 +6,7 @@ import csv
 import umap
 import sklearn.metrics.pairwise as skdist
 
-def visualize_global_effects(control_features, condition_features, protein_names, labels=[], scale=True):
+def visualize_global_effects(control_features, condition_features, protein_names, labels=[], scale=True, spread=0.1):
     combined_features = np.concatenate((control_features, condition_features))
 
     if scale:
@@ -20,7 +18,7 @@ def visualize_global_effects(control_features, condition_features, protein_names
     if len(labels) != 0:
         classes = np.unique(labels)
 
-    encoder = umap.UMAP(metric="euclidean", n_neighbors=30, spread=0.1, random_state=42).fit(combined_features)
+    encoder = umap.UMAP(metric="euclidean", n_neighbors=30, spread=spread, random_state=42).fit(combined_features)
     control_projection = encoder.transform(control_features)
     condition_projection = encoder.transform(condition_features)
 
@@ -79,7 +77,7 @@ def visualize_global_effects(control_features, condition_features, protein_names
 
 
 def visualize_changes(control_features, condition_features, change_matrix, protein_names,
-                      labels=[], change_list=np.arange(0, 10), scale=True):
+                      labels=[], change_list=np.arange(0, 10), scale=True, spread=0.1):
     combined_features = np.concatenate((control_features, condition_features))
     change_ranking = np.argsort(np.sum(np.abs(change_matrix), axis=1))[::-1][change_list]
 
@@ -92,7 +90,7 @@ def visualize_changes(control_features, condition_features, change_matrix, prote
     if len(labels) != 0:
         classes = np.unique(labels)
 
-    encoder = umap.UMAP(metric="euclidean", n_neighbors=30, spread=0.1, random_state=42).fit(combined_features)
+    encoder = umap.UMAP(metric="euclidean", n_neighbors=30, spread=spread, random_state=42).fit(combined_features)
     control_projection = encoder.transform(control_features)
     condition_projection = encoder.transform(condition_features)
 
@@ -208,6 +206,7 @@ def get_localization_labels(protein_list, conversion):
             localizations.append("unknown")
     return np.array(localizations)
 
+
 def clean_localization_labels(localization_labels):
     for i in range(0, len(localization_labels)):
         if "," in localization_labels[i] or localization_labels[i] == "ambiguous" or \
@@ -223,27 +222,40 @@ def clean_localization_labels(localization_labels):
     return localization_labels
 
 
-if __name__ == "__main__":
-    control = "../data/HOwt_features.tsv"
-    condition = "../data/HU02_features.tsv"
-    change = "../data/HU02_changes.tsv"
+def clean_human_labels(localization_labels):
+    for i in range(0, len(localization_labels)):
+        if localization_labels[i].count(";") > 1 or localization_labels[i] == "":
+            localization_labels[i] = "multi-localizing/unknown"
+        elif localization_labels[i] == "nucleoplasm;":
+            localization_labels[i] = "nucleus"
+        elif localization_labels[i] == "microtubule organizing center;" or \
+                localization_labels[i] == "actin filaments;" or localization_labels[i] == "microtubules;"\
+                or localization_labels[i] == "cell junctions;" or localization_labels[i] == "cytokinetic bridge;"\
+                or localization_labels[i] == "focal adhesion sites;" or localization_labels[i] == "intermediate filaments;"\
+                or localization_labels[i] == "midbody;" or localization_labels[i] == "midbody ring;" or \
+                localization_labels[i] == "mitotic spindle;":
+            localization_labels[i] = "cytoskeleton"
+        elif localization_labels[i] == "nucleoli fibrillar center;":
+            localization_labels[i] = "nucleolus"
+        localization_labels[i] = localization_labels[i].replace(";", "")
+    return localization_labels
 
+
+if __name__ == "__main__":
+    control = "../data/human_cell_lines/U-2-OS_features.tsv"
+    condition = "../data/human_cell_lines/A-431_features.tsv"
+    change = "../data/human_cell_lines/U-2-OS_A-431_change.tsv"
+    localizations = '../data/human_cell_lines/U-2-OS_subcellular_localizations.tsv'
+
+    # Open files
     protein_names, sorted_control, sorted_condition, _ = filter_matrices(control, condition)
     _, _, change = open_matrix(change)
-    localization_labels = get_localization_labels(protein_names, '../data/yeast_localizations.tsv')
+    localization_labels = get_localization_labels(protein_names, localizations)
 
-    for i in range(0, len(localization_labels)):
-        if "," in localization_labels[i] or localization_labels[i] == "ambiguous" or \
-                localization_labels[i] == "unknown":
-            localization_labels[i] = "multi-localizing/unknown"
-        elif localization_labels[i] == "early Golgi" or localization_labels[i] == "late Golgi" \
-                or localization_labels[i] == "ER to Golgi":
-            localization_labels[i] = "Golgi"
-        elif localization_labels[i] == "punctate composite" or localization_labels[i] == "actin" \
-            or localization_labels[i] == "lipid particle" or localization_labels[i] == "endosome" \
-            or localization_labels[i] == "peroxisome" or localization_labels[i] == "spindle pole":
-                localization_labels[i] = "punctate"
+    # Clean up localization labels for visualization
+    localization_labels = clean_human_labels(localization_labels)
 
-    #visualize_global_effects(sorted_control, sorted_condition, protein_names, localization_labels)
+    # Visualize global effects
+    changes_to_visualize = np.arange(10, 20)  # Visualize the top 10 ranked changes
     visualize_changes(sorted_control, sorted_condition, change, protein_names, localization_labels,
-                      change_list=np.arange(0, 10), scale=True)
+                      change_list=changes_to_visualize, scale=True)

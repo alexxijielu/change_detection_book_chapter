@@ -137,9 +137,9 @@ def knn_change_detection(reference, condition, output, k=50, verbose=True):
         print ("Done!")
 
 if __name__ == '__main__':
-    reference = r"C:\Users\alexi_000\Desktop\new_change_detection\mrcnn_averaged_features\RAP0.txt"
-    condition = r"C:\Users\alexi_000\Desktop\new_change_detection\mrcnn_averaged_features\RAP3.txt"
-    output = r"C:\Users\alexi_000\Desktop\new_change_detection\visualization\RAP3_scaled.txt"
+    reference = r"C:\Users\lualex\PycharmProjects\change_detection_book_chapter\data\human_cell_lines\U-2-OS_features.tsv"
+    condition = r"C:\Users\lualex\PycharmProjects\change_detection_book_chapter\data\human_cell_lines\A-431_features.tsv"
+    output = r"C:\Users\lualex\PycharmProjects\change_detection_book_chapter\data\human_cell_lines\U-2-OS_A-431_change.tsv"
     k = 50
 
     print ("Calculating protein localization change profiles...")
@@ -150,5 +150,5 @@ if __name__ == '__main__':
 
     print ("Done!")
     packageGeneMatrix(output, headers, genelist, sorted_cond)
-    packageGeneMatrix(r"C:\Users\alexi_000\Desktop\new_change_detection\visualization\RAP3_expectation_proteins.txt",
-                      headers, genelist, means)
+    #packageGeneMatrix(r"C:\Users\alexi_000\Desktop\new_change_detection\visualization\RAP3_expectation_proteins.txt",
+    #                  headers, genelist, means)
