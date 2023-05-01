@@ -73,6 +73,7 @@ def visualize_global_effects(control_features, condition_features, protein_names
     box = ax.get_position()
     ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
     ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), markerscale=3)
+
     plt.show()
 
 
@@ -239,23 +240,3 @@ def clean_human_labels(localization_labels):
             localization_labels[i] = "nucleolus"
         localization_labels[i] = localization_labels[i].replace(";", "")
     return localization_labels
-
-
-if __name__ == "__main__":
-    control = "../data/human_cell_lines/U-2-OS_features.tsv"
-    condition = "../data/human_cell_lines/A-431_features.tsv"
-    change = "../data/human_cell_lines/U-2-OS_A-431_change.tsv"
-    localizations = '../data/human_cell_lines/U-2-OS_subcellular_localizations.tsv'
-
-    # Open files
-    protein_names, sorted_control, sorted_condition, _ = filter_matrices(control, condition)
-    _, _, change = open_matrix(change)
-    localization_labels = get_localization_labels(protein_names, localizations)
-
-    # Clean up localization labels for visualization
-    localization_labels = clean_human_labels(localization_labels)
-
-    # Visualize global effects
-    changes_to_visualize = np.arange(10, 20)  # Visualize the top 10 ranked changes
-    visualize_changes(sorted_control, sorted_condition, change, protein_names, localization_labels,
-                      change_list=changes_to_visualize, scale=True)
